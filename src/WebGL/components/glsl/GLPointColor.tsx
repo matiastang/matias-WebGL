@@ -2,10 +2,10 @@
  * @Author: tangdaoyong
  * @Date: 2020-12-25 14:28:12
  * @LastEditors: tangdaoyong
- * @LastEditTime: 2020-12-25 18:17:49
+ * @LastEditTime: 2021-04-20 16:37:38
  * @Description: WebGL GLSL gl_PointColor
  */
-import { message } from 'antd';
+// import { message } from 'antd';
 import { hot } from 'react-hot-loader/root';// 引入hot
 import React, { useEffect } from 'react';
 import getWebGLContext, { getWebGLProgram } from '../../utils/ts/shaderUtils';
