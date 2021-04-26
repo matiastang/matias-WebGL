@@ -1,15 +1,8 @@
 /*
  * @Author: tangdaoyong
- * @Date: 2021-04-20 15:53:59
- * @LastEditors: tangdaoyong
- * @LastEditTime: 2021-04-20 16:20:13
- * @Description: file content
- */
-/*
- * @Author: tangdaoyong
  * @Date: 2020-11-24 17:24:53
  * @LastEditors: tangdaoyong
- * @LastEditTime: 2020-12-25 17:59:56
+ * @LastEditTime: 2021-04-20 17:59:01
  * @Description: webpack配置
  */
 var path = require('path');
@@ -44,6 +37,9 @@ module.exports = {
     plugins: [
         // 为了避免webpack因为生成众多的scss.d.ts而导致速度变慢
         // new webpack.WatchIgnorePlugin([/\.css$/]),
+        // new webpack.WatchIgnorePlugin([
+        //     /css\.d\.ts$/
+        // ]),
         new CleanWebpackPlugin({ cleanStaleWebpackAssets: false }),
         new HtmlWebpackPlugin({ // 处理 html，配置多个会生成多个 html
             title: 'React学习', // html的标题
@@ -69,7 +65,7 @@ module.exports = {
         filename: '[name].bundle.js'
     },
     resolve: {
-        extensions: ['*', '.tsx', '.ts', '.js', '.jsx', '.svg', '.scss', '.vert', '.tesc', '.tese', '.geom', '.frag', '.comp'],
+        extensions: ['*', '.tsx', '.ts', '.js', '.jsx', '.svg', '.css', '.scss', '.less', '.vert', '.tesc', '.tese', '.geom', '.frag', '.comp'],
         alias: {
             services: path.resolve(__dirname, 'src/services/')
             // ,
@@ -108,15 +104,32 @@ module.exports = {
             },
             {
                 test: /\.css$/, // 匹配 css 文件
-                use: ['style-loader', 'css-loader']
+                include: /src/,
+                use: [
+                    "style-loader",
+                    {
+                      loader: "@teamsupercell/typings-for-css-modules-loader",
+                      options: {
+                        // pass all the options for `css-loader` to `css-loader`, eg.
+                        namedExport: true,
+                        modules: true
+                      }
+                    },
+                    {
+                        loader: "css-loader",
+                        options: {
+                            modules: true
+                        }
+                    }
+                ]
             },
             {
-                test: /\.scss$/,
+                test: /\.s(a|c)ss$/,
+                include: /src/,
                 use: [{
                     loader: 'style-loader'
                 }, {
-                    loader: '@teamsupercell/typings-for-css-modules-loader',
-                    // typings-for-css-modules-loader让我们可以像使用js模块一样引入css和scss文件。
+                    loader: '@teamsupercell/typings-for-css-modules-loader',// typings-for-css-modules-loader让我们可以像使用js模块一样引入css和scss文件。
                     options: {
                         formatter: 'prettier'
                     }
@@ -166,3 +179,24 @@ module.exports = {
         compress: true // 压缩
     }
 };
+/*
+[延迟类型检查](https://github.com/TypeStrong/fork-ts-checker-webpack-plugin#plugin-hooks)
+const webpack = require('webpack');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+
+const compiler = webpack({
+  // ... webpack config
+});
+
+// optionally add the plugin to the compiler
+// **don't do this if already added through configuration**
+new ForkTsCheckerWebpackPlugin().apply(compiler);
+
+// now get the plugin hooks from compiler
+const hooks = ForkTsCheckerWebpackPlugin.getCompilerHooks(compiler);
+
+// say we want to show some message when plugin is waiting for issues results
+hooks.waiting.tap('yourListenerName', () => {
+  console.log('waiting for issues');
+});
+*/
